@@ -39,15 +39,12 @@ int sbin_sel(int argc,char** argv){
         if (address!=address_get()){
             //listem mode
             select_listen();
-            PIN_LOW(LED_TX);
         }else if (address==0){
             //general call
             select_general();
-            
         }else{
             //selected
             select_selected();
-            PIN_LOW(LED_TX);
         }
     }else{
        //listen mode

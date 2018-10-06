@@ -12,7 +12,7 @@ bool driver_setup(){
     while (OSCCONbits.LOCK != 1);//PLL Lock
 #endif
     //周辺機器(優先度高)
-    ports_setup();
+    port_setup();
     //システム(優先度高)
    //eeprom_setup();
     //周辺機器

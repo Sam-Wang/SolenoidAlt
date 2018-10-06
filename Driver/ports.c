@@ -1,83 +1,64 @@
 #include "../Setting/configuration.h"
 #include "ports.h"
 
-void ports_setup(){
-    //Switch (STOP)
-    TRISEbits.TRISE8=true;
-    //Switch Address (Din)
-    TRIS_SEL1(true);
-    TRIS_SEL2(true);
-    TRIS_SEL4(true);
-    TRIS_SEL8(true);
+void port_setup() {
+    //入出力方向設定
+    const TRISBBITS dir_b = {
+        .TRISB0 = true, //SEL1
+        .TRISB1 = true, //SEL2
+        .TRISB2 = true, //SEL4
+        .TRISB3 = true, //SEL8
+        .TRISB4 = false, //LED(Select)
+        .TRISB5 = false//LED(Error)
+    };
+    const TRISCBITS dir_c = {
+        .TRISC14 = true, //RX
+        .TRISC13 = false //TX
+    };
+    const TRISDBITS dir_d = {
+        .TRISD0 = false, //LED(Sig)
+    };
+
+    const TRISEBITS dir_e = {
+        .TRISE0 = false, //out1
+        .TRISE1 = false, //out2
+        .TRISE2 = false, //out3
+        .TRISE3 = false, //out4
+        .TRISE4 = false, //out5
+        .TRISE5 = false//out6
+    };
+
+    TRISBbits = dir_b;
+    TRISCbits = dir_c;
+    TRISDbits = dir_d;
+    TRISEbits = dir_e;
+
+    //初期値書き込み
+    LATB=0;
+    LATC=0;
+    LATD=0;
+    LATE=0;
     
-    ADPCFGbits.PCFG0=true;
-    ADPCFGbits.PCFG1=true;
-    //ENCODER (Din)
-    TRISBbits.TRISB3=true;
-    TRISBbits.TRISB4=true;
-    TRISBbits.TRISB5=true;
+    //ADC無効化
+    ADPCFG = 0xffff;
+    ADPCFGbits.PCFG5 = true;
     
-    ADPCFGbits.PCFG3=true;
-    ADPCFGbits.PCFG4=true;
-    ADPCFGbits.PCFG5=true;
-
-    //LED(Dout)
-    TRISEbits.TRISE2=false;//LED_ERROR
-    TRISBbits.TRISB2=false;//LED_APP
-    TRISDbits.TRISD0=false;//LED_RX
-    TRISDbits.TRISD1=false;//LED_TX
     
-    LATEbits.LATE2=false;
-    LATBbits.LATB2=false;
-    LATDbits.LATD0=false;
-    LATDbits.LATD1=false;
-    //UART
-    LATCbits.LATC13=true;
-    TRISCbits.TRISC14=true;//RX
-    TRISCbits.TRISC13=false;//TX
-
-    //PWM
-    TRISEbits.TRISE3=false;//HalfBridge A
-    TRISEbits.TRISE4=false;//ST
-    TRISEbits.TRISE5=false;//HalfBridge B
-    //PWM_ENABLE
-    LATEbits.LATE4=true;//begin
+    
 }
 
-inline uint16_t port_address(){
-    return  ((!PIN_SEL1())<<0)+
-            ((!PIN_SEL2())<<3)+
-            ((!PIN_SEL4())<<2)+
-            ((!PIN_SEL8())<<1);   
+inline uint16_t port_address() {
+    //負論理と仮定
+    const uint16_t dip= PORTB&0xf;
+    return ~dip;
 }
 
-inline void led_rx(bool fag){
-    LED_RX=fag;
+void port_led_select(bool x){
+    LATBbits.LATB4=x;
 }
-
-inline int16_t port_get(int idx){
-    switch (idx){
-        case 1:
-            return PORTB;
-        case 2:
-            return PORTC;
-        case 3:
-            return PORTD;
-        case 4:
-            return PORTE;
-        case 5:
-            return PORTF;
-        default:
-            return -1;//ERROR
-    }
+void port_led_transmit(bool x){
+    LATBbits.LATB5=x;
 }
-
-inline bool pin_encode_idx(){
-    return PORTBbits.RB3;
-}
-inline bool pin_encode_x(){
-    return PORTBbits.RB4;
-}
-inline bool pin_encode_y(){
-    return PORTBbits.RB5;
+void port_led_receive(bool x){
+    LATDbits.LATD0=x;
 }

@@ -1,5 +1,6 @@
 #include "../Setting/configuration.h"
 #include "uart.h"
+#include "ports.h"
 
 #include <string.h>
 
@@ -175,14 +176,14 @@ void uart_clr() {
 
 inline void uart_stop() {
     TRISCbits.TRISC13 = true; //T
-    LED_TX=false;
+    port_led_select(false);
     U1STAbits.UTXEN = false;
 }
 
 inline void uart_begin() {
     LATCbits.LATC13 = true;
     TRISCbits.TRISC13 = false; //TX
-    LED_TX=true;
+      port_led_select(true);
     U1STAbits.UTXEN = true;
 }
 
@@ -235,6 +236,7 @@ const char* uart_putl(const char* str) {
 
 void _ISR _U1RXInterrupt() {
     char c;
+    static bool led_status=false;
     do {
         c = U1RXREG;
 
@@ -248,17 +250,18 @@ void _ISR _U1RXInterrupt() {
         }
 
     } while (U1STAbits.URXDA);
-    LED_RX=!LED_RX;
+    port_led_receive(led_status=!led_status);
     IFS0bits.U1RXIF = false;
 }
 
 void _ISR _U1TXInterrupt() {
+    static bool led_status=false;
     while (tused > 0 && U1STAbits.UTXBF == false) {
         U1TXREG = tbuf[tout];
         tout = (tout + 1) == TX_BUFFER_SIZE ? 0 : tout + 1;
         tused--;
     }
-    LED_TX=!LED_TX;
+    port_led_transmit(led_status=!led_status);
     IEC0bits.U1TXIE = tused > 0;
     IFS0bits.U1TXIF = false;
 }

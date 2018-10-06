@@ -11,20 +11,13 @@
 #include <stdbool.h>
 
 
-void ports_setup();
+void port_setup();
+uint16_t port_address();
 
-inline uint16_t port_address();
+void port_led_select(bool);
+void port_led_transmit(bool);
+void port_led_receive(bool);
 
-inline void led_rx(bool);
-
-
-
-
-inline int16_t port_get(int idx);
-
-inline bool pin_encode_idx();
-inline bool pin_encode_x();
-inline bool pin_encode_y();
 
 #endif	/* PORTS_H */
 
