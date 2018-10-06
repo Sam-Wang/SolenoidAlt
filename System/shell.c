@@ -7,8 +7,6 @@
 #include <string.h>
 #include <stdio.h>
 
-static float temp = 100;
-
 static void shell_listen(){
     file_t root,sbin;
     path_init();//これまでの構成を破棄
@@ -18,19 +16,13 @@ static void shell_listen(){
 }
 
 static void shell_selected(){
-    file_t root,env,bin,sbin;
+    file_t root,bin,sbin;
     path_init();//これまでの構成を破棄
     root=path_root();
     directory_insert(root,bin=bin_create());
     directory_registor(bin);
     directory_insert(root,sbin=sbin_create());
-    directory_registor(sbin);
-
-    
-    directory_insert(root, env = directory_create("env"));
-    {
-        directory_insert(root, float_create("temp", &temp, AccessReadAndWrite));
-    }
+    directory_registor(sbin); 
 }
 
 void shell_init() {

@@ -88,6 +88,8 @@
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>App/air.c</itemPath>
+    <itemPath>App/air.h</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>App</Elem>
