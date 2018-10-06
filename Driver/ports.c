@@ -34,31 +34,44 @@ void port_setup() {
     TRISEbits = dir_e;
 
     //初期値書き込み
-    LATB=0;
-    LATC=0;
-    LATD=0;
-    LATE=0;
-    
+    LATB = 0;
+    LATC = 0;
+    LATD = 0;
+    LATE = 0;
+
     //ADC無効化
     ADPCFG = 0xffff;
     ADPCFGbits.PCFG5 = true;
-    
-    
-    
+
+
+
 }
 
 inline uint16_t port_address() {
     //負論理と仮定
-    const uint16_t dip= PORTB&0xf;
+    const uint16_t dip = PORTB & 0xf;
     return ~dip;
 }
 
-void port_led_select(bool x){
-    LATBbits.LATB4=x;
+void port_led_select(bool x) {
+    LATBbits.LATB4 = x;
 }
-void port_led_transmit(bool x){
-    LATBbits.LATB5=x;
+
+void port_led_transmit(bool x) {
+    LATBbits.LATB5 = x;
 }
-void port_led_receive(bool x){
-    LATDbits.LATD0=x;
+
+void port_led_receive(bool x) {
+    LATDbits.LATD0 = x;
+}
+
+bool port_out_set(port_out_t out, bool value) {
+    const uint16_t num = (int) out;
+    if (0 < num && num <= 6) {
+        const uint16_t mask = 1 << (num-1);
+        LATE = value ? LATE | mask : LATE&~mask;
+        return true; //OK
+    } else {
+        return false; //NG not exist target
+    }
 }
