@@ -5,7 +5,7 @@
 #include "shell_core.h"
 #include "../Driver/ports.h"
 #include "../Setting/configuration.h"
-static int16_t address_ofset=+16;
+static int16_t address_ofset=+32;
 
 static int16_t address_get(){
     return address_ofset+port_address();
